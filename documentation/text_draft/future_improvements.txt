@@ -27,4 +27,21 @@ ALTER TABLE tickets ADD COLUMN extra_int1 INTEGER;
 
 # Добавить функционал для администраторов создавать разделы и направления обслуживания.
 
+- В таблицы "sections" и "service_directions" добавить поле 
+"is_active - BOOLEAN NOT NULL DEFAULT TRUE" - чтобы выключать разделы и НО вместо удаления. Но без админки смысла нет.
+
+- В таблице "work_groups" добавить поле "is_active - BOOLEAN NOT NULL DEFAULT TRUE"
+
+- В таблице "users" добавить поле "is_active - BOOLEAN NOT NULL DEFAULT TRUE,"
+
+- В таблице "users" добавить поле "updated_at - TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP".
+
 # Добавить возможность возобновления обращения, а следовательно и статус "Закрыто" (CLOSED).
+
+# Добавить возможность редактирования комментариев.
+
+- В таблицу "comments" добавить поле "updated_at - TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP".
+
+# В таблицу ticket_events добавить old_value и new_value для отслеживания изменений.
+
+
