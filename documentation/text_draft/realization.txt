@@ -436,5 +436,42 @@ bd: postgresql
 	где данный испольнитель указан как Ответственный сотрудник, статус обращения - NEW, IN_PROGRESS.
 
 ---------------------------
+# СТРУКТУРА ПРОЕКТА
 
+├── config
+├── controller
+├── dto
+│   ├── request
+│   ├── response
+│   └── error
+├── entity
+├── enums
+├── exception
+├── mapper
+├── repository
+├── security
+├── service
+│   ├── impl
+│   └── helper
+├── specification
+├── scheduler
+├── validation
+└── util
 
+---------------------------
+# ENTITY / MODEL
+
+Role, 
+User, 
+WorkGroup, 
+Section, 
+ServiceDirection, 
+TicketType, 
+Ticket, 
+Comment, 
+TicketEvent, 
+Notification
+
++ 2 сущности для связки.
+
+---------------------------
