@@ -19,6 +19,7 @@ target/
 *.iml
 *.ipr
 /.env
+/postgres-volume/
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +36,4 @@ build/
 
 ### MacBook ###
 *.DS_Store
+

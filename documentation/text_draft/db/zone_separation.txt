@@ -1,0 +1,173 @@
+---------------------------------------------
+---------------------------------------------
+В ЧЕМ ЛОГИКА
+---------------------------------------------
+---------------------------------------------
+Делим управление через подключения (connection pool?) на 3 роли:
+1. postgres_admin - полный доступ к ddl & dml, но не используется приложением.
+
+2. helpdesk_migrator - миграции через liquibase выполняются от имени helpdesk_migrator.
+Выбирается данная УЗ, т.к. она указана в "application.yaml / liquibase".
+
+3. helpdesk_app - все обычные операции приложения будут идти от имени helpedsk_app 
+(при INSERT, UPDATE, DELETE, SELECT используется helpdesk_app).
+Выбирается данная УЗ, т.к. она указана в "application.yaml / datasource".
+
+---------------------------------------------
+---------------------------------------------
+КАК НАСТРИВАЕТСЯ
+---------------------------------------------
+---------------------------------------------
+1. ПОДГОТОВИТЬ СТРУКТУРУ ПРОЕКТА (это чисто под системные роли):
+
+project-root/
+├─ docker-compose.yml
+├─ .env
+├─ docker/
+│  └─ postgres/
+│     └─ init/
+│        └─ 01-init-roles.sh
+├─ postgres-volume/ -- этот пакет создасться автоматом при запуске "docker compose up -d", возможно лучше не создавать пакет заранее.
+└─ src/
+   └─ main/
+      └─ resources/
+         └─ application.yml
+
+2. СОЗДАТЬ .env 
+
+2.1. Держать в том же пакете, что и docker-compose.yml. 
+2.2. Креды из него автоматически подхватывает только docker-compose (дальше хранит в виде хэшей в самой бд). 
+2.3. Для приложения креды необходимо указывать креды более явно (я добавил в application.yaml). 
+
+Пример .env:
+POSTGRES_DB=helpdesk
+
+POSTGRES_USER=postgres_admin
+POSTGRES_PASSWORD=postgres_admin_password
+
+APP_DB_MIGRATOR_USER=helpdesk_migrator
+APP_DB_MIGRATOR_PASSWORD=helpdesk_migrator_password
+
+APP_DB_USER=helpdesk_app
+APP_DB_PASSWORD=helpdesk_app_password
+
+3. ПОДГОТОВИТЬ docker-compose.yml
+
+3.1. Должна быть информация о POSTGRES_DB: "- POSTGRES_DB=${POSTGRES_DB}"
+3.2. в "volumes" добавить информацию об init-скриптах.
+3.3. кредыдля админки бд.
+
+Пример docker-compose.yml:
+
+services:
+  db:
+    image: postgres:17.4-alpine
+    container_name: helpdesk_db
+    restart: always
+
+    env_file:
+      - .env
+
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - ./postgres-volume:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+
+    networks:
+      db-backend:
+        aliases:
+          - db.db-backend
+
+volumes:
+  postgres-volume:
+
+networks:
+  db-backend:
+
+4. Должен быть init-скрипт ролей (у меня он по пути docker/postgres/init/01-init-roles.sh).
+
+4.1. Лучше .sh чел sql скрипт.
+4.2. Файл надо будет сделать исполняемым с помощью команды: "chmod +x docker/postgres/init/01-init-roles.sh".
+
+ПРИМЕР (в данном случае он создает роли app и migrator и устанавливает им права):
+
+#!/bin/sh
+set -e
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+DO
+\$\$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${APP_DB_MIGRATOR_USER}') THEN
+        CREATE ROLE ${APP_DB_MIGRATOR_USER} LOGIN PASSWORD '${APP_DB_MIGRATOR_PASSWORD}';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${APP_DB_USER}') THEN
+        CREATE ROLE ${APP_DB_USER} LOGIN PASSWORD '${APP_DB_PASSWORD}';
+    END IF;
+END
+\$\$;
+
+GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO ${APP_DB_MIGRATOR_USER};
+GRANT CONNECT ON DATABASE ${POSTGRES_DB} TO ${APP_DB_USER};
+
+GRANT USAGE, CREATE ON SCHEMA public TO ${APP_DB_MIGRATOR_USER};
+GRANT USAGE ON SCHEMA public TO ${APP_DB_USER};
+
+ALTER SCHEMA public OWNER TO ${APP_DB_MIGRATOR_USER};
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO ${APP_DB_USER};
+GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO ${APP_DB_USER};
+
+ALTER DEFAULT PRIVILEGES FOR ROLE ${APP_DB_MIGRATOR_USER} IN SCHEMA public
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO ${APP_DB_USER};
+
+ALTER DEFAULT PRIVILEGES FOR ROLE ${APP_DB_MIGRATOR_USER} IN SCHEMA public
+GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO ${APP_DB_USER};
+EOSQL
+
+5. НАСТРОИТЬ application.yml
+
+ПРИМЕР:
+
+//username указанный здесь, это helpdesk_app.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:helpdesk}
+    username: ${APP_DB_USER}
+    password: ${APP_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+//username указанный здесь, это helpdesk_migrator.
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/schema.xml
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:helpdesk}
+    user: ${APP_DB_MIGRATOR_USER}
+    password: ${APP_DB_MIGRATOR_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+6. ЗАПУСТИТЬ БД
+
+6.1. По классике: "docker compose up -d".
+флаг "-d" - "detach" запуск в фоновом режиме.
+6.2. Проверить, что контейнер поднялся: "docker ps".
+6.3. Проверить логи: "docker compose logs db".
+
+7. СОЗДАТЬ ПОДКЛЮЧЕНИ ДЛЯ КАЖДОГО ПОЛЬЗОВАТЕЛЯ ПРИ НЕОБХОДИМОСТИ.
+7.1. Для работы приложения эти подключения не нужны - только для ручных операций, это просто клиент, а не часть конфигурации.
+7.2. В поле "Database:" указываем название бд из .env "POSTGRES_DB=".
