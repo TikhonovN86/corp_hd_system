@@ -1,3 +1,12 @@
 spring:
   application:
     name: spring
+
+  datasource:
+
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: root
+
+    liquibase:
+      change-log: 'classpath:db-migrations/changelog.xml'
