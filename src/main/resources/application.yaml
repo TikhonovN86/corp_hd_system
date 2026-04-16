@@ -1,3 +1,16 @@
 spring:
   application:
     name: spring
+
+  datasource:
+
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:helpdesk}
+    username: helpdesk_app
+    password: helpdesk_app_password
+
+  liquibase:
+    enabled: true
+    change-log: 'classpath:db-migrations/changelog.xml'
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB:helpdesk}
+    user: helpdesk_migrator
+    password: helpdesk_migrator_password
