@@ -6,7 +6,14 @@
           http://www.liquibase.org/xml/ns/dbchangelog
           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
 
-    <changeSet id="create-table-roles" author="auto">
+    <changeSet id="create-table-roles" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="roles"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="roles">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -20,7 +27,14 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-table-ticket_types" author="auto">
+    <changeSet id="create-table-ticket_types" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ticket_types"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="ticket_types">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -39,7 +53,14 @@
 
     </changeSet>
 
-    <changeSet id="create-table-work_groups" author="auto">
+    <changeSet id="create-table-work_groups" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="work_groups"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="work_groups">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -54,7 +75,14 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-table-sections" author="auto">
+    <changeSet id="create-table-sections" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="sections"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="sections">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -69,7 +97,14 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="create-table-service_directions" author="auto">
+    <changeSet id="create-table-service_directions" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="service_directions"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="service_directions">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -108,7 +143,14 @@
                              constraintName="uq_service_direction_name_per_section"/>
     </changeSet>
 
-    <changeSet id="create-table-users" author="auto">
+    <changeSet id="create-table-users" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="users">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -145,7 +187,14 @@
                                  constraintName="fk_users_role"/>
     </changeSet>
 
-    <changeSet id="create-table-user_work_groups" author="auto">
+    <changeSet id="create-table-user_work_groups" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_work_groups"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="user_work_groups">
             <column name="user_id" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_work_groups"/>
@@ -173,7 +222,14 @@
                                  constraintName="fk_user_work_groups_work_group"/>
     </changeSet>
 
-    <changeSet id="create-table-service_direction_work_groups" author="auto">
+    <changeSet id="create-table-service_direction_work_groups" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="service_direction_work_groups"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="service_direction_work_groups">
             <column name="service_direction_id" type="bigint">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_service_direction_work_groups"/>
@@ -204,7 +260,14 @@
                                  constraintName="fk_sdwg_work_group"/>
     </changeSet>
 
-    <changeSet id="create-table-tickets" author="auto">
+    <changeSet id="create-table-tickets" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="tickets"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="tickets">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -290,7 +353,14 @@
                                  constraintName="fk_tickets_assignee"/>
     </changeSet>
 
-    <changeSet id="create-table-comments" author="auto">
+    <changeSet id="create-table-comments" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="comments"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="comments">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -327,7 +397,14 @@
                                  constraintName="fk_comments_author"/>
     </changeSet>
 
-    <changeSet id="create-table-ticket_events" author="auto">
+    <changeSet id="create-table-ticket_events" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ticket_events"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="ticket_events">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -365,7 +442,14 @@
                                  constraintName="fk_ticket_events_author"/>
     </changeSet>
 
-    <changeSet id="create-table-notifications" author="auto">
+    <changeSet id="create-table-notifications" author="TikhonovNS">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="notifications"/>
+            </not>
+        </preConditions>
+
         <createTable tableName="notifications">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>

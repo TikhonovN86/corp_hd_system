@@ -1,0 +1,139 @@
+com.example.helpdesk
+├── config
+│   ├── SecurityConfig
+│   └── JacksonConfig
+├── controller
+│   ├── AuthController
+│   ├── TicketController
+│   ├── CommentController
+│   ├── NotificationController
+│   ├── TicketEventController
+│   ├── ReferenceDataController
+│   └── UserController
+├── dto
+│   ├── request
+│   │   ├── CreateTicketRequest
+│   │   ├── AddCommentRequest
+│   │   ├── AssignEmployeeRequest
+│   │   ├── ChangeTicketTypeRequest
+│   │   ├── TransferTicketRequest
+│   │   ├── ReturnTicketRequest
+│   │   ├── ResolveTicketRequest
+│   │   └── TicketSearchRequest
+│   ├── response
+│   │   ├── TicketListItemResponse
+│   │   ├── TicketDetailsResponse
+│   │   ├── TicketResponse
+│   │   ├── CommentResponse
+│   │   ├── TicketEventResponse
+│   │   ├── NotificationResponse
+│   │   ├── UserShortResponse
+│   │   ├── WorkGroupResponse
+│   │   ├── SectionResponse
+│   │   ├── ServiceDirectionResponse
+│   │   └── TicketTypeResponse
+│   └── error
+│       ├── ApiErrorResponse
+│       ├── ValidationErrorResponse
+│       └── FieldValidationError
+├── entity
+│   ├── Role
+│   ├── User
+│   ├── WorkGroup
+│   ├── Section
+│   ├── ServiceDirection
+│   ├── TicketType
+│   ├── Ticket
+│   ├── Comment
+│   ├── TicketEvent
+│   └── Notification
+├── enums
+│   ├── RoleCode
+│   ├── TicketStatus
+│   ├── TicketTypeCode
+│   ├── TicketEventType
+│   └── SlaState
+├── exception
+│   ├── GlobalExceptionHandler
+│   ├── EntityNotFoundException
+│   ├── AccessDeniedException
+│   ├── BusinessRuleException
+│   ├── InvalidTicketStateException
+│   ├── InvalidAssigneeException
+│   ├── CommentValidationException
+│   └── TicketAlreadyResolvedException
+├── mapper
+│   ├── TicketMapper
+│   ├── CommentMapper
+│   ├── TicketEventMapper
+│   ├── NotificationMapper
+│   ├── UserMapper
+│   └── ReferenceMapper
+├── repository
+│   ├── RoleRepository
+│   ├── UserRepository
+│   ├── WorkGroupRepository
+│   ├── SectionRepository
+│   ├── ServiceDirectionRepository
+│   ├── TicketTypeRepository
+│   ├── TicketRepository
+│   ├── CommentRepository
+│   ├── TicketEventRepository
+│   └── NotificationRepository
+├── security
+│   ├── CustomUserDetails
+│   ├── CustomUserDetailsService
+│   └── CurrentUserProvider
+├── service
+│   ├── AuthService
+│   ├── UserService
+│   ├── TicketService
+│   ├── CommentService
+│   ├── TicketEventService
+│   ├── NotificationService
+│   ├── SlaService
+│   ├── AccessService
+│   ├── ReferenceDataService
+│   └── impl
+│       ├── UserServiceImpl
+│       ├── TicketServiceImpl
+│       ├── CommentServiceImpl
+│       ├── TicketEventServiceImpl
+│       ├── NotificationServiceImpl
+│       ├── SlaServiceImpl
+│       └── ReferenceDataServiceImpl
+├── specification
+│   └── TicketSpecifications
+├── scheduler
+│   └── NotificationCleanupScheduler
+└── validation
+    └── BusinessValidators
+
+-----------------------------------------------------------------
+МИНИМУМ ДЛЯ ДЕМОНСТРАЦИИ
+-----------------------------------------------------------------
+1. логин в систему;
+2. 3 роли: инициатор, диспетчер, исполнитель;
+3. создание обращения инициатором;
+4. список обращений для каждой роли;
+5. карточка обращения;
+6. комментарии;
+7. перевод в IN_PROGRESS;
+8. передача на другую РГ;
+9. возврат на диспетчеров;
+10. перевод в RESOLVED;
+11. SLA как вычисляемый признак;*
+12.журнал событий;*
+13. уведомления только инициатору.*
+
+-----------------------------------------------------------------
+1. БД
+2. Собрать Spring Boot + Security + login/session.
+3. Реализовать TicketService с проверкой ролей и РГ.
+4. Сделать 3 главные страницы и карточку обращения.
+5. Реализовать основные действия по тикету.
+6. Добавить комментарии и приватные комментарии.
+7. Добавить SLA.
+8. Добавить журнал событий.
+9. Уведомления инициатору.
+10. Тесты.
