@@ -28,7 +28,7 @@ public class SecurityConfig {
     private final AppUserDetailsService appUserDetailsService;
 
     /*
-    Класс - основная конфигурация безопасности.
+     Класс - основная конфигурация безопасности.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -62,11 +62,7 @@ public class SecurityConfig {
 
                 //Form Login
                 .formLogin(form -> form
-                        //Страница логина (чтобы не использовать дефолтную)
-                        .loginPage("/login")
-                        //После логина попадаем сюда.
                         .defaultSuccessUrl("/api/test/me", true)
-                        .permitAll()
                 )
 
                 //Logout

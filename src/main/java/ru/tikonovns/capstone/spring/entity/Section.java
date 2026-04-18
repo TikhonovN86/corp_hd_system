@@ -6,17 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
 
-@Entity
-@Getter
 @Setter
+@Getter
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "work_groups")
-public class WorkGroup {
+@Table(name = "sections")
+public class Section {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "code")
@@ -28,9 +29,6 @@ public class WorkGroup {
     @Column(name = "description")
     private String description;
 
-    /*
-     Нет связи с user_work_groups,
-     потому что связь с user_work_groups будет осуществляться,
-     возможно в UserRepository, чтобы не делать двунаправленную связь:
-    */
+    @OneToMany(mappedBy = "section", fetch = FetchType.LAZY)
+    private Set<ServiceDirection> serviceDirections = new HashSet<>();
 }
